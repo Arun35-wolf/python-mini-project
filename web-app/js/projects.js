@@ -1183,6 +1183,110 @@ function initFlames() {
         `;
     }
 
+    
+    function showSequence() {
+        isPlayingSequence = true;
+        disableButtons(true);
+        displayContent.textContent = "Watch the sequence...";
+        
+        let i = 0;
+        const playNextEmoji = () => {
+            if (i < sequence.length) {
+                const emoji = sequence[i];
+                const button = Array.from(emojiButtons).find(btn => btn.dataset.emoji === emoji);
+                
+                if (button) {
+                    button.classList.add('active');
+                    setTimeout(() => {
+                        button.classList.remove('active');
+                        i++;
+                        setTimeout(playNextEmoji, 500);
+                    }, 600);
+                }
+            } else {
+                isPlayingSequence = false;
+                disableButtons(false);
+                userSequence = [];
+                gameActive = true;
+                displayContent.textContent = "Your turn! Click the emojis...";
+                instructionsDiv.textContent = `👆 Repeat the sequence (${sequence.length} steps)`;
+            }
+        };
+        
+        playNextEmoji();
+    }
+    
+    function startNewRound() {
+        const newEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+        sequence.push(newEmoji);
+        userSequence = [];
+        
+        sequenceLengthDisplay.textContent = sequence.length;
+        setTimeout(showSequence, 500);
+    }
+    
+    function handleEmojiClick(emoji, button) {
+        if (isPlayingSequence || !gameActive) return;
+        
+        userSequence.push(emoji);
+        button.classList.add('active');
+        
+        setTimeout(() => {
+            button.classList.remove('active');
+        }, 300);
+        
+        // Check if the emoji matches
+        if (userSequence[userSequence.length - 1] !== sequence[userSequence.length - 1]) {
+            gameOver();
+            return;
+        }
+        
+        // Check if the entire sequence is correct
+        if (userSequence.length === sequence.length) {
+            score += level * 10;
+            scoreDisplay.textContent = score;
+            level++;
+            levelDisplay.textContent = level;
+            
+            instructionsDiv.textContent = "✅ Correct! Get ready for the next round...";
+            gameActive = false;
+            setTimeout(startNewRound, 1500);
+        }
+    }
+    
+    function gameOver() {
+        gameActive = false;
+        disableButtons(true);
+        instructionsDiv.textContent = `❌ Game Over! You reached Level ${level} with Score: ${score}`;
+        displayContent.textContent = `Final Score: ${score}`;
+        startBtn.textContent = "▶️ PLAY AGAIN";
+    }
+    
+    function resetGame() {
+        sequence = [];
+        userSequence = [];
+        score = 0;
+        level = 1;
+        gameActive = false;
+        isPlayingSequence = false;
+        
+        scoreDisplay.textContent = '0';
+        levelDisplay.textContent = '1';
+        sequenceLengthDisplay.textContent = '0';
+        instructionsDiv.textContent = "👇 Click START to begin the game!";
+        displayContent.textContent = "Ready to test your memory?";
+        startBtn.textContent = "▶️ START";
+        
+        disableButtons(true);
+    }
+    
+    startBtn.addEventListener('click', () => {
+        resetGame();
+        gameActive = true;
+        instructionsDiv.textContent = "Watch the sequence...";
+        startNewRound();
+    });
+
     calculateBtn.addEventListener('click', calculateFlames);
     name1Input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') calculateFlames();

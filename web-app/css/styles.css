@@ -2812,6 +2812,7 @@ body {
     .modal-content {
         padding: 1.5rem;
         border-radius: 16px;
+        position: relative;
     }
 }
 
@@ -4190,6 +4191,12 @@ html[data-theme="dark"] body {
     line-height: 1;
     transition: background 0.18s ease, transform 0.18s ease;
 }
+
+[data-theme="dark"] .card-icon {
+    background: linear-gradient(145deg, rgba(40, 40, 40, 0.8), rgba(20, 20, 20, 0.9));
+    color: var(--footer-card-color);
+    box-shadow: inset 0 1px 0 rgba(252, 176, 91, 0.08);
+    border-color: rgba(252, 176, 91, 0.1);
 
 .card-actions .btn-share {
     background: rgba(128, 104, 85, 0.06);
